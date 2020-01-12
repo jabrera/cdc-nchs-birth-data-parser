@@ -4,28 +4,35 @@ import time
 import constants
 import data_fields
 
+START_TIME = time.clock()
+
 def getValue(myString, start, end):
     return myString[start-1:end]
 
 year = "2016"
 readFile = year + ".txt"
-writeFile = "parsed" + year + ".csv"
-MAX_READ = 100
-
 rfo = open(readFile, "r")
-wfo = open(writeFile, "w").close()
-wfo = open(writeFile, "a")
+
+ROWS_PER_PART = 500000
+MAX_READ = None
+START_PART = 1 # MINIMUM OF 1
+
+
+wfo = None
 id = 0
-START_TIME = time.clock()
+currentPart = START_PART - 1
 for x in rfo:
-    print("-=-=-=-=-=-=")
+    if id >= (START_PART-1) * ROWS_PER_PART:
+        if (id) % ROWS_PER_PART == 0:
+            if wfo != None:
+                wfo.close()
+
+            currentPart = currentPart + 1
+            wfo =  open("birth-data-" + str(year) + "-" + str(ROWS_PER_PART) + "-rows-part-"+str(currentPart)+".csv", "w")
+    else:
+        id = id + 1
+        continue
     id = id + 1
-
-    
-
-    print("ID ["+ str(id) +"]")
-    print("Length is " + str(len(x)))
-    print(x)
 
     columns = data_fields.columns[year]
     csvRow = ''
@@ -66,17 +73,13 @@ for x in rfo:
         
         if colCount > 1:
             csvRow = csvRow + ','
-        csvRow = csvRow + str(columns[col]['definition'])
+        csvRow = csvRow + '"' + str(columns[col]['definition']) + '"'
     
     wfo.write(csvRow)
     wfo.write('\n')
-
-    # print(json.dumps(columns,indent=2))
-
-
-
-    if id == MAX_READ:
-        break
+    if MAX_READ != None:
+        if id == MAX_READ:
+            break
 
 END_TIME = time.clock()
 
