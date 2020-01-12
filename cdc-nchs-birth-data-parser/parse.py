@@ -9,7 +9,7 @@ START_TIME = time.clock()
 def getValue(myString, start, end):
     return myString[start-1:end]
 
-year = "2016"
+year = "2017"
 readFile = year + ".txt"
 rfo = open(readFile, "r")
 
@@ -26,22 +26,18 @@ for x in rfo:
         if (id) % ROWS_PER_PART == 0:
             if wfo != None:
                 wfo.close()
-
             currentPart = currentPart + 1
             wfo =  open("birth-data-" + str(year) + "-" + str(ROWS_PER_PART) + "-rows-part-"+str(currentPart)+".csv", "w")
     else:
         id = id + 1
         continue
     id = id + 1
-
     columns = data_fields.columns[year]
     csvRow = ''
     colCount = 0
     for col in columns:
         colCount = colCount + 1
-
         columns[col]['value'] = getValue(x,columns[col]['start'],columns[col]['end'])
-
         if 'valueDefinition' in columns[col]:
             if columns[col]['value'] in columns[col]['valueDefinition']:
                 columns[col]['definition'] = columns[col]['valueDefinition'][columns[col]['value']]
@@ -68,22 +64,16 @@ for x in rfo:
                             columns[col]['definition'] = columns[col]['value']
         else:
             columns[col]['definition'] = columns[col]['value']
-
         columns[col]['definition'] = columns[col]['definition'].replace('[value]', str(columns[col]['value']).strip("0"))
-        
         if colCount > 1:
             csvRow = csvRow + ','
         csvRow = csvRow + '"' + str(columns[col]['definition']) + '"'
-    
     wfo.write(csvRow)
     wfo.write('\n')
     if MAX_READ != None:
         if id == MAX_READ:
             break
-
 END_TIME = time.clock()
-
 print("Finished at " + str(END_TIME-START_TIME) + " seconds")
-
 wfo.close()
 rfo.close()
