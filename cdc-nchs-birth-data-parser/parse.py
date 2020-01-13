@@ -9,7 +9,7 @@ START_TIME = time.clock()
 def getValue(myString, start, end):
     return myString[start-1:end]
 
-year = "2017"
+year = "2018"
 readFile = year + ".txt"
 rfo = open(readFile, "r")
 
